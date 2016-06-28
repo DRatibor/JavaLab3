@@ -10,7 +10,10 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 public class GroupsManagerUI {
-	CollectionManager collectionCreator; // класс для создания коллекций
+	
+	
+	DataBaseBank dataBaseBank;
+	CollectionManager collectionManager; // класс для создания коллекций
 											// продуктов
 	ServerPullPusher serverPullPusher; // класс со списком команд для сервера
 
@@ -99,15 +102,24 @@ public class GroupsManagerUI {
 		groupDescriptionLabel = new JLabel("Опис групи");
 
 		// выпадающий список групп
-		String[] items = { "Створити групу", "Элемент списка 2",
-				"Элемент списка 3" };
+		serverPullPusher.pushString("getGroupList");
+		dataBaseBank.setGroupList();
+		String[] items = collectionManager.arrayOfGroupsInGropCollection();
+		String[] itemsAndAdd = new String[items.length+1];
+		for (int i=1; i<=items.length; i++){
+			itemsAndAdd[i] = items[i-1];
+		}
+		itemsAndAdd[0]= "Створити групу";
 		groupsComboBox = new JComboBox(items);
 		groupsComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if ((String) groupsComboBox.getSelectedItem() != "Створити групу") {
 					groupTextField.setText((String) groupsComboBox
 							.getSelectedItem());
+					groupDescriptionTextArea.setText(collectionManager.groupDiscription((String) groupsComboBox
+							.getSelectedItem()));
 					groupTextField.setEditable(false);
+					
 				} else {
 					groupTextField.setEditable(true);
 					groupTextField.setText("");
@@ -133,14 +145,14 @@ public class GroupsManagerUI {
 				}
 				else if (groupName.equals("Створити групу")) {
 					serverPullPusher.pushString("eddGroup");
-					serverPullPusher.pushListOfGroups(collectionCreator
+					serverPullPusher.pushListOfGroups(collectionManager
 							.createGroupCollection(groupTextField.getText(),
 							groupDescription));
 				}else {
 					serverPullPusher.pushString("editGroup");
-					// serverPullPusher.pushListOfGroups(collectionCreator
-					// .createGroupCollection(groupName,
-					// groupDescription));
+					 serverPullPusher.pushListOfGroups(collectionManager
+					 .createGroupCollection(groupName,
+					 groupDescription));
 					groupName = null;
 					groupDescription = null;
 				}
