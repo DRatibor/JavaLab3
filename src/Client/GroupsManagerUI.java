@@ -1,5 +1,6 @@
 package Client;
 
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -55,6 +56,7 @@ public class GroupsManagerUI {
 	}
 	public static GroupsManagerUI getInstance(ServerPullPusher serverPullPusher){
 		if(instance == null) instance = new GroupsManagerUI(serverPullPusher);
+		// 2.27
 		
 		return instance;
 		
