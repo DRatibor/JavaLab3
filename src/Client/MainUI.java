@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionListener;
 public class MainUI {
 
 	// êîìïîíåíòû èíòåðôåéñà
+	ArrayList<StructureOfProductDB> productDBArray = new ArrayList<StructureOfProductDB>();
 	ServerPullPusher serverPullPusher;
 	String searchText;
 	public Boolean visible = true;
@@ -148,14 +149,27 @@ public class MainUI {
 
 		// ñïèñîê ãðóïï òîâàðîâ
 		groupsList = new JList();
+		groupsList.setModel(collectionManager.doListModel())
 		groupsList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				goodsOfGroupTable.removeAll();
+				serverPullPusher.pushString("statistics")
+				if (groupsList.getValue() != "Усі группи"){
+				serverPullPusher.pushString("allGroups");
+				productDBArray = serverPullPusher.pullProductList();
+				}
+				else{
+				serverPullPusher.pushString("forGroup");
+				serverPullPusher.pushString(groupsList.getValue());
+				productDBArray = serverPullPusher.pullProductList();
+				}
 			}
 		});
 
 		// öåíòðàëüíàÿ òàáëèöà ñî ñïèñêîì òîâàðîâ ãðóïïû
-		goodsOfGroupTable = new JTable();
+		TableModel model = new MyTableModel(productDBArray);
+		goodsOfGroupTable = new JTable(model);
+		getContentPane().add(new JScrollPane(goodsOfGroupTable));
 
 		// íàäïèñü "Çàãàëîì:" âíèçó ôîðìû
 		totalLabel = new JLabel("Çàãàëîì: ");
