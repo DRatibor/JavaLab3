@@ -3,27 +3,53 @@ package Server;
 import java.io.*;
 import java.net.*;
 
-public class Server {
+public class Server extends Thread {
 
-	public static final int PORT = 8081;
-	static int in = 1;
-	static String pass = "play";
-	static DataInputStream is;
-	static DataOutputStream os;
-	ServerSocket s;
+	public static final int PORT = 8001; // порт подключения
+	private ClientPullPusher clientPullPusher;
+	private DataBaseCreator dataBaseCreator;
+	static DataInputStream is; // входящий поток
+	static DataOutputStream os; // исходящий поток
+	ServerSocket serverSocet; // сокет сервера
+	Socket socket; // сокет
+	private String login = "login";
+	private String pass = "pass";
+	char[] entPass;
+	ClientPullPusher spp;
 
-	Server() throws IOException {
-		s = new ServerSocket(PORT);
+	public Server() {
+		start();
+	}
+
+	public void run() {
+		//spp = new ClientPullPusher(socket);
+		dataBaseCreator = new DataBaseCreator();
+		dataBaseCreator.createDateBase("Product.db");
 		try {
-			Socket socket = s.accept();
-			System.out.println("Встановили з'єднання: " + socket);
-			is = new DataInputStream(socket.getInputStream());
-		} finally {
-			s.close();
+			serverSocet = new ServerSocket(PORT);
+			System.out.println("Запустили сервер");
+			while (true) {
+				socket = serverSocet.accept();
+				System.out.println("Подключили сокет " + socket);
+//				spp = new ClientPullPusher(socket);
+				new ClientConnection(socket, dataBaseCreator);
+//				initPassword();				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
-	String getName() throws IOException{
-	return is.readUTF();
-	}
-	
+
+//	private void initPassword() { // проверяем пароль
+//		if (spp.pullString().equals(login)) {
+//			for (int i = 0; spp.pullChar() != null; i++) {
+//				entPass += spp.pullChar();
+//			}
+//			if (pass.equals(entPass.toString()))
+//				spp.pushBoolean(true);
+//			new DataBaseManager(clientPullPusher, dataBaseCreator);
+//		} else
+//			spp.pushBoolean(false);
+//	}
+
 }

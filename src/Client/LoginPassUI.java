@@ -1,9 +1,8 @@
-
-
 package Client;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.Socket;
 import java.util.Arrays;
 
 import javax.swing.*;
@@ -11,17 +10,19 @@ import javax.swing.border.EmptyBorder;
 
 public class LoginPassUI extends JFrame {
 
+	private Socket socket;
 	private JLabel mainLabel;
 	private JLabel loginLabel;
 	private JTextField login;
 	private JLabel passLabel;
 	private JPasswordField pass;
 	private JButton okButton;
-	String TRUELOGIN = "PlayJava";
-	char[] TRUEPASS;
+	private ServerPullPusher spp;
 
-	public LoginPassUI() {
+	public LoginPassUI(Socket socket) {
 		super();
+		this.socket = socket;
+		spp = new ServerPullPusher(socket);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Авторизація");
 		init();
@@ -71,17 +72,15 @@ public class LoginPassUI extends JFrame {
 	}
 
 	public Boolean confirmation() {
-		TRUEPASS = new char[4];
-
-		TRUEPASS[0] = 'p';
-		TRUEPASS[1] = 'l';
-		TRUEPASS[2] = 'a';
-		TRUEPASS[3] = 'y';
 		okButton.addActionListener(new ClickLisner());
-		if (login.getText().equals(TRUELOGIN))
-			if (Arrays.equals(pass.getPassword(), TRUEPASS) == true) {
-				return true;
-			}
+		spp.pushString("EntryConfirmation");
+		spp.pushString(login.getText());
+		for (int i = 0; i < pass.getPassword().length; i++) {
+			spp.pushChar(pass.getPassword()[i]);
+		}
+		if (spp.pullBoolean() == true) {
+			return true;
+		}
 		return false;
 	}
 
@@ -110,28 +109,14 @@ public class LoginPassUI extends JFrame {
 			okButton.setText("Підтвердити");
 		}
 	}
-	class ClickLisner implements ActionListener{
-		public void actionPerformed(ActionEvent e){
-			
-			
-			//////////////
-			//А что если здесь сделать сетеры, которые меняют пароль прямо на сервере	
-			//Переменные в том классе нужно сделать видимыми только в средине пакета
-			///////////////
-			if (login.getText().equals(TRUELOGIN ) && Arrays.equals(pass.getPassword(), TRUEPASS)){
-			new SuccessWindow();	
-			}
-			else 
-			new FailureWindowUI();
-	}
-	}
-	/////////
-	public String getMyLogin(){
-		return login.getText();
-	}
-	public char[] getMyPass(){
-		return pass.getPassword();
-	}
-	//////////
 
+	class ClickLisner implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			if (confirmation() == true) {
+				new MainUI();
+				setVisible(false);
+			} else
+				new FailureWindowUI();
+		}
+	}
 }
