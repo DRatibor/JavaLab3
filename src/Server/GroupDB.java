@@ -3,6 +3,8 @@ package Server;
 import java.sql.*;
 import java.util.ArrayList;
 
+import SharedTypes.StructureOfGroupDB;
+
 public class GroupDB {
 	Connection connection;
 
@@ -28,12 +30,12 @@ public class GroupDB {
             ResultSet res = statement.executeQuery("SELECT * FROM " + StructureOfGroupDB.getGroupTableName());
 
             while (res.next()) {
-            	StructureOfGroupDB structureOfGroupDB = new StructureOfGroupDB();
-                structureOfGroupDB.setGroupId(res.getInt("id"));
-                structureOfGroupDB.setGroupName(res.getString("groupName"));
-                structureOfGroupDB.setGroupDescription(res.getString("groupDescription"));
+            	StructureOfGroupDB group = new StructureOfGroupDB();
+            	group.setGroupId(res.getInt("id"));
+            	group.setGroupName(res.getString("groupName"));
+            	group.setGroupDescription(res.getString("groupDescription"));
 
-                groupList.add(structureOfGroupDB);
+                groupList.add(group);
             }
             statement.close();
             res.close();
@@ -41,40 +43,18 @@ public class GroupDB {
             e.printStackTrace();
         }
         return groupList;
-    }
-    
-    //public ArrayList<StructureOfGroupDB> getByName(String groupName) {
-    //	ArrayList<StructureOfGroupDB> groupList = new ArrayList<StructureOfGroupDB>();
-
-    //    try {
-    //        Statement statement = connection.createStatement();
-    //        ResultSet res = statement.executeQuery("SELECT * FROM " + StructureOfGroupDB.getGroupTableName()
-    //        	    + " WHERE name = '" + groupName + "'");
-
-    //        while (res.next()) {
-    //        	StructureOfGroupDB structureOfGroupDB = new StructureOfGroupDB();
-    //            structureOfGroupDB.setGroupId(res.getInt("id"));
-    //            structureOfGroupDB.setGroupName(res.getString("groupName"));
-    //            structureOfGroupDB.setGroupDescription(res.getString("groupDescription"));
-
-    //            groupList.add(structureOfGroupDB);
-    //        }
-    //        statement.close();
-    //        res.close();
-    //    } catch (SQLException e) {
-    //        e.printStackTrace();
-    //    }
-    //    return groupList;
-    //}
-
-    
+    }    
+     
     public boolean add(StructureOfGroupDB structureOfGroupDB) {
         boolean isInsert = false;
 
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO " + StructureOfGroupDB.getGroupTableName() + " (name) VALUES (?)");
+            PreparedStatement statement = connection.prepareStatement(
+            		"INSERT INTO " + StructureOfGroupDB.getGroupTableName() 
+            		+ " (groupName, groupDescription) VALUES (?, ?)");
 
             statement.setString(1, structureOfGroupDB.getGroupName());
+            statement.setString(2, structureOfGroupDB.getGroupDescription());
 
             int result = statement.executeUpdate();
             isInsert = true;
@@ -85,15 +65,15 @@ public class GroupDB {
         return isInsert;
     }
 
-    public boolean update(StructureOfGroupDB structureOfGroupDB) {
+    public boolean update(StructureOfGroupDB groupToUpdate) {
         boolean isUpdate = false;
 
-	int id = structureOfGroupDB.getGroupId();
-	
-        try {
+	    try {
             PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE " + StructureOfGroupDB.getGroupTableName() +
-                    " SET name = '" + structureOfGroupDB.getGroupName() + "' WHERE id = '" + id + "'");
+                    "UPDATE " + StructureOfGroupDB.getGroupTableName()
+                    + " SET groupName = '" + groupToUpdate.getGroupName() + "'"
+                    + ", groupDescription = '" + groupToUpdate.getGroupDescription() + "'"
+                    + " WHERE name = '" + groupToUpdate.getGroupName() + "'");
 
             int result = statement.executeUpdate();
             isUpdate = true;
@@ -104,11 +84,13 @@ public class GroupDB {
         return isUpdate;
     }
     
-    public boolean delete(int id) {
+    public boolean delete(StructureOfGroupDB groupToDelete) {
         boolean isDelete = false;
 
         try {
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM " + StructureOfGroupDB.getGroupTableName() + " WHERE id = '" + id + "'");
+            PreparedStatement statement = connection.prepareStatement(
+            		"DELETE FROM " + StructureOfGroupDB.getGroupTableName() 
+            		+ " WHERE groupName = '" + groupToDelete.getGroupName() + "'");
             int result = statement.executeUpdate();
             isDelete = true;
             statement.close();

@@ -3,6 +3,8 @@ package Server;
 import java.sql.*;
 import java.util.ArrayList;
 
+import SharedTypes.StructureOfProductDB;
+
 public class ProductDB {
 	Connection connection;
 
@@ -23,13 +25,13 @@ public class ProductDB {
 	}
 
 	
-	public ArrayList<StructureOfProductDB> getListInGroup (int groupId) {
+	public ArrayList<StructureOfProductDB> getListInGroup (String groupName) {
 		ArrayList<StructureOfProductDB> productList = new ArrayList<StructureOfProductDB>();
 
 		try {
 			Statement statement = connection.createStatement();
 			ResultSet res = statement.executeQuery("SELECT * FROM "
-					+ StructureOfProductDB.getProductTableName() + " WHERE productGroup = " + groupId);
+					+ StructureOfProductDB.getProductTableName() + " WHERE productGroup = '" + groupName + "'");
 
 			while (res.next()) {
 				StructureOfProductDB product = new StructureOfProductDB();
@@ -53,6 +55,39 @@ public class ProductDB {
 		return productList;
 	}
 
+	
+	public ArrayList<StructureOfProductDB> getStatistics (String groupName) {
+		ArrayList<StructureOfProductDB> productList = new ArrayList<StructureOfProductDB>();
+
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet res = statement.executeQuery("SELECT * FROM "
+					+ StructureOfProductDB.getProductTableName() + " WHERE productGroup = '" + groupName + "'");
+
+			while (res.next()) {
+				StructureOfProductDB product = new StructureOfProductDB();
+				product.setProductID(res.getInt("id"));
+				product.setProductGroup(res.getString("productGroup"));
+				product.setProductName(res.getString("productName"));
+				product.setProductDescription(res
+						.getString("productDescription"));
+				product.setProductManufacturer(res
+						.getString("productManufacturer"));
+				product.setProductAmount(res.getInt("productAmount"));
+				product.setProductPrice(res.getDouble("productPrice"));
+
+				productList.add(product);
+			}
+			statement.close();
+			res.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return productList;
+	}
+
+	
+	
 	public ArrayList<StructureOfProductDB> search(String searchPhrase) {
 		ArrayList<StructureOfProductDB> productList = new ArrayList<StructureOfProductDB>();
 
@@ -108,16 +143,17 @@ public class ProductDB {
 			e.printStackTrace();
 		}
 		return isInsert;
-	}
+	}	
 	
-	public boolean increaseAmount(int id, int increaseOnValue) {
+	
+	public boolean increaseAmount(StructureOfProductDB productToIncreaseAmount, int increaseOnValue) {
 		boolean isIncreased = false;
 
 		try {
 			PreparedStatement statement = connection.prepareStatement("UPDATE "
 					+ StructureOfProductDB.getProductTableName()
 					+ " SET productAmount = productAmount + " + increaseOnValue
-					+ " WHERE productId = " + id);
+					+ " WHERE productName = '" + productToIncreaseAmount.getProductName() + "'");
 			int result = statement.executeUpdate();
 			isIncreased = true;
 			statement.close();
@@ -127,16 +163,16 @@ public class ProductDB {
 		return isIncreased;
 	}
 	
-	public boolean decreaseAmount(int id, int decreaseOnValue) {
+	public boolean decreaseAmount(StructureOfProductDB productToDecreaseAmount, int decreaseOnValue) {
 		boolean isDecreased = false;
 
 		try {
 			PreparedStatement statement = connection.prepareStatement("UPDATE "
 					+ StructureOfProductDB.getProductTableName()
 					+ " SET productAmount = productAmount - " + decreaseOnValue
-					+ " WHERE productId = " + id);
+					+ " WHERE productName = '" + productToDecreaseAmount.getProductName() + "'");
 			int result = statement.executeUpdate();
-			isIncreased = true;
+			isDecreased = true;
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -146,8 +182,6 @@ public class ProductDB {
 
 	public boolean update(StructureOfProductDB product) {
 		boolean isUpdate = false;
-
-		int id = product.getProductId();
 		
 		try {
 			PreparedStatement statement = connection.prepareStatement("UPDATE "
@@ -159,7 +193,8 @@ public class ProductDB {
 					+ "', productManufacturer = '"
 					+ product.getProductManufacturer() + "', productAmount = '"
 					+ product.getProductAmount() + "', productPrice = '"
-					+ product.getProductPrice() + "' WHERE id = '" + id + "'");
+					+ product.getProductPrice() + "'"
+					+ " WHERE productName = '" + product.getProductName() + "'");
 			int result = statement.executeUpdate();
 			isUpdate = true;
 			statement.close();
@@ -169,14 +204,14 @@ public class ProductDB {
 		return isUpdate;
 	}
 
-	public boolean delete(int id) {
+	public boolean delete(StructureOfProductDB productToDelete) {
 		boolean isDelete = false;
 
 		try {
 			PreparedStatement statement = connection
 					.prepareStatement("DELETE FROM "
 							+ StructureOfProductDB.getProductTableName()
-							+ " WHERE id = '" + id + "'");
+							+ " WHERE productName = '" + productToDelete.getProductName() + "'");
 			int result = statement.executeUpdate();
 			isDelete = true;
 			statement.close();
@@ -186,14 +221,14 @@ public class ProductDB {
 		return isDelete;
 	}
 	
-	public boolean deleteAllInGroup (int groupId) {
+	public boolean deleteAllInGroup (String groupName) {
 		boolean isDelete = false;
 
 		try {
 			PreparedStatement statement = connection
 					.prepareStatement("DELETE FROM "
 							+ StructureOfProductDB.getProductTableName()
-							+ " WHERE groupId = '" + groupId + "'");
+							+ " WHERE productGroup = '" + groupName + "'");
 			int result = statement.executeUpdate();
 			isDelete = true;
 			statement.close();

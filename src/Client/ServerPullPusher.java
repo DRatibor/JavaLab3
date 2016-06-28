@@ -4,7 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-import Server.StructureOfGroupDB;
+import SharedTypes.StructureOfGroupDB;
+import SharedTypes.StructureOfProductDB;
 
 public class ServerPullPusher {
 	private Socket socket;
@@ -105,35 +106,70 @@ public class ServerPullPusher {
 			return false;
 		}
 	}
-
-	public void pushListOfGroups(ArrayList arrayList) {
-		try {
-			int listSize = arrayList.size();
-			pushInt(listSize);
-			for (int i = 0; i < listSize; i++) {
-				objOu.writeObject(arrayList.get(i));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	
+	
+	public void pushGroup(StructureOfGroupDB groupToServer) throws Exception {				
+		objOu.writeObject(groupToServer);
 	}
-
-	public ArrayList<StructureOfGroupDB> pullListOfGroups() {
-		ArrayList<StructureOfGroupDB> groupsList = new ArrayList<StructureOfGroupDB>();
-
-		try {
-			int listSize = pullInt();
-			for (int i = 0; i < listSize; i++) {
-				StructureOfGroupDB newGroup = (StructureOfGroupDB) objIo
-						.readObject();
-				groupsList.add(newGroup);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		return groupsList;
+	
+	public void pushProduct(StructureOfProductDB productToServer) throws Exception {				
+		objOu.writeObject(productToServer);
 	}
+	
+	public StructureOfGroupDB pullGroup() throws Exception {
+		StructureOfGroupDB groupFromServer = (StructureOfGroupDB) objIo.readObject();
+		
+		return groupFromServer;
+	}
+	
+	public StructureOfProductDB pullProduct() throws Exception {
+		StructureOfProductDB productFromServer = (StructureOfProductDB) objIo.readObject();
+		
+		return productFromServer;
+	}
+	
+	public ArrayList<StructureOfGroupDB> pullGroupList () throws Exception {
+		ArrayList<StructureOfGroupDB> listOfGroupsFromServer = (ArrayList<StructureOfGroupDB>) objIo.readObject(); 
+		
+		return listOfGroupsFromServer;
+	}
+	
+	public ArrayList<StructureOfProductDB> pullProductsList () throws Exception {
+		ArrayList<StructureOfProductDB> listOfProductsFromServer = (ArrayList<StructureOfProductDB>) objIo.readObject(); 
+		
+		return listOfProductsFromServer;
+	}
+		
+		
+//
+//	public void pushListOfGroups(ArrayList arrayList) {
+//		try {
+//			int listSize = arrayList.size();
+//			pushInt(listSize);
+//			for (int i = 0; i < listSize; i++) {
+//				objOu.writeObject(arrayList.get(i));
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	public ArrayList<StructureOfGroupDB> pullListOfGroups() {
+//		ArrayList<StructureOfGroupDB> groupsList = new ArrayList<StructureOfGroupDB>();
+//
+//		try {
+//			int listSize = pullInt();
+//			for (int i = 0; i < listSize; i++) {
+//				StructureOfGroupDB newGroup = (StructureOfGroupDB) objIo
+//						.readObject();
+//				groupsList.add(newGroup);
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return groupsList;
+//	}
 }

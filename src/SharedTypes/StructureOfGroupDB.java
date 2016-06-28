@@ -1,4 +1,4 @@
-package Server;
+package SharedTypes;
 
 import java.io.Serializable;
 

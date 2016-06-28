@@ -8,6 +8,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import SharedTypes.StructureOfGroupDB;
+import SharedTypes.StructureOfProductDB;
+
 public class ClientPullPusher {
 	private Socket socket;
 	private DataInputStream io;
@@ -110,16 +113,30 @@ public class ClientPullPusher {
 		}
 	}
 	
-	public StructureProductDb pullProduct() {
+	public StructureOfGroupDB pullGroup() {
+		StructureOfGroupDB groupFromClient = null;
 		try {
-			StructureProductDb productFromClient = (StructureProductDb) objIo.readObject();
-			return productFromClient;
-		} catch (IOException e) {
-			e.printStackTrace();
+			groupFromClient = (StructureOfGroupDB) objIo.readObject();
+//			return productFromClient;
+		} catch (Exception e) {
+			e.printStackTrace();  
 		}
+		return groupFromClient;
+	}
+
+	
+	public StructureOfProductDB pullProduct() {
+		StructureOfProductDB productFromClient = null;
+		try {
+			productFromClient = (StructureOfProductDB) objIo.readObject();
+//			return productFromClient;
+		} catch (Exception e) {
+			e.printStackTrace();  
+		}
+		return productFromClient;
 	}
 	
-	public void pushGroup(StructureGroupDb groupToClient) {
+	public void pushGroup(StructureOfGroupDB groupToClient) {
 		try {
 			objOu.writeObject(groupToClient);
 		} catch (IOException e) {
@@ -128,7 +145,7 @@ public class ClientPullPusher {
 	}
 	
 	
-	public void pushProduct(StructureProductDb productToClient) {
+	public void pushProduct(StructureOfProductDB productToClient) {
 		try {
 			objOu.writeObject(productToClient);
 		} catch (IOException e) {
@@ -136,7 +153,7 @@ public class ClientPullPusher {
 		}
 	}
 	
-	public void pushGroupList (ArrayList<StructureGroupDb> listOfGroupsToClient) {
+	public void pushGroupList (ArrayList<StructureOfGroupDB> listOfGroupsToClient) {
 		try {
 			objOu.writeObject(listOfGroupsToClient);
 		} catch (IOException e) {
@@ -144,7 +161,7 @@ public class ClientPullPusher {
 		}
 	}
 	
-	public void pushProductList (ArrayList<StructureProductDb> listOfProductsToClient) {
+	public void pushProductList (ArrayList<StructureOfProductDB> listOfProductsToClient) {
 		try {
 			objOu.writeObject(listOfProductsToClient);
 		} catch (IOException e) {

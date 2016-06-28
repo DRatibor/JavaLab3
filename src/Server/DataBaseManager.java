@@ -3,6 +3,9 @@ package Server;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import SharedTypes.StructureOfGroupDB;
+import SharedTypes.StructureOfProductDB;
+
 public class DataBaseManager extends Thread {
 	Boolean serverconnection = true;
 	private ClientPullPusher clientPullPusher;
@@ -27,98 +30,98 @@ public class DataBaseManager extends Thread {
 			switch (clientPullPusher.pullString()) {
 
 			case "addProduct":
-				StructureProductDb product = clientPullPusher.pullProduct();
+				StructureOfProductDB product = clientPullPusher.pullProduct();
 				Boolean dbResponse = productDB.add(product);
 				clientPullPusher.pushBoolean(dbResponse);
 				
 				// addProduct(); // StructureProductDb
 				break;
 			case "getProductList":
-				int groupId = clientPullPusher.pullInt();
-				ArrayList<StructureProductDb> prodList = productDB.getListInGroup(groupId);
+				String groupName = clientPullPusher.pullString();
+				ArrayList<StructureOfProductDB> prodList = productDB.getListInGroup(groupName);
 				clientPullPusher.pushProductList(prodList);
 				
 				// getProductList(); // int groupId
 				break;		
 			case "getGroupList":
-				ArrayList<StructureGroupDb> groupList = productDB.getList();
-				clientPullPusher.pushGroupList();
+				ArrayList<StructureOfGroupDB> groupList = groupDB.getList();
+				clientPullPusher.pushGroupList(groupList);
 				
 				// getGroupList(); 
 				break;
 			case "deleteAllInGroup":
-				int groupId = clientPullPusher.pullInt();
-				Boolean dbResponse = productDB.deleteAllInGroup(groupId);
-				clientPullPusher.pushBoolean(dbResponse);
+				String groupNameToDeleteIn = clientPullPusher.pullString();
+				Boolean productsIngroupDeleted = productDB.deleteAllInGroup(groupNameToDeleteIn);
+				clientPullPusher.pushBoolean(productsIngroupDeleted);
 				
 				// editProduct(); // StructureProductDb
 				break;	
 				
 			case "increaseGoodAmount":
-				int prodId = clientPullPusher.pullInt();
+				StructureOfProductDB productToIncreaseAmount = clientPullPusher.pullProduct();
 				int increaseOnValue = clientPullPusher.pullInt();
-				Boolean dbResponse = productDB.increaseAmount(prodId, increaseOnValue);
-				clientPullPusher.pushBoolean(dbResponse);
+				Boolean amountIncreased = productDB.increaseAmount(productToIncreaseAmount, increaseOnValue);
+				clientPullPusher.pushBoolean(amountIncreased);
 				
 				// editProduct(); // StructureProductDb
 				break;
 			case "decreaseGoodAmount":
-				int prodId = clientPullPusher.pullInt();
+				StructureOfProductDB productToDecreaseAmount = clientPullPusher.pullProduct();
 				int decreaseOnValue = clientPullPusher.pullInt();
-				Boolean dbResponse = productDB.decreaseAmount(prodId, decreaseOnValue);
-				clientPullPusher.pushBoolean(dbResponse);
+				Boolean amountDecreased = productDB.decreaseAmount(productToDecreaseAmount, decreaseOnValue);
+				clientPullPusher.pushBoolean(amountDecreased);
 				
 				// editProduct(); // StructureProductDb
 				break;
 			case "editProduct":
-				StructureProductDb product = clientPullPusher.pullProduct();
-				Boolean dbResponse = productDB.update(product);
-				clientPullPusher.pushBoolean(dbResponse);
+				StructureOfProductDB productToEdit = clientPullPusher.pullProduct();
+				Boolean productUpdated = productDB.update(productToEdit);
+				clientPullPusher.pushBoolean(productUpdated);
 				
 				// editProduct(); // StructureProductDb
 				break;
 			case "delProduct":
-				int prodId = clientPullPusher.pullInt();
-				Boolean dbResponse = productDB.delete(prodId);
-				clientPullPusher.pushBoolean(dbResponse);
+				StructureOfProductDB productToDelete = clientPullPusher.pullProduct();
+				Boolean productDeleted = productDB.delete(productToDelete);
+				clientPullPusher.pushBoolean(productDeleted);
 				
 				// delProduct(); // int prodId
 				break;
 			case "addGroup":
-				StructureGroupDb group = clientPullPusher.pullGroup();
-				Boolean dbResponse = groupDB.add(group);
-				clientPullPusher.pushBoolean(dbResponse);
+				StructureOfGroupDB group = clientPullPusher.pullGroup();
+				Boolean groupAdded = groupDB.add(group);
+				clientPullPusher.pushBoolean(groupAdded);
 				
 				// addGroup(); // 
 				break;
 			case "editGroup":
-				StructureGroupDb group = clientPullPusher.pullGroup();
-				Boolean dbResponse = groupDB.update(group);
-				clientPullPusher.pushBoolean(dbResponse);
+				StructureOfGroupDB groupToEdit = clientPullPusher.pullGroup();
+				Boolean groupUpdated = groupDB.update(groupToEdit);
+				clientPullPusher.pushBoolean(groupUpdated);
 				
 				// editGroup();
 				break;
 			case "delGroup":
-				int groupId = clientPullPusher.pullInt();
-				Boolean dbResponse = groupDB.delete(groupId);
-				clientPullPusher.pushBoolean(dbResponse);
+				StructureOfGroupDB groupToDelete = clientPullPusher.pullGroup();
+				Boolean groupDeleted = groupDB.delete(groupToDelete);
+				clientPullPusher.pushBoolean(groupDeleted);
 				
 				// delGroup();
 				break;
 			case "statistics":
 				String type = clientPullPusher.pullString();
-				String groupId = null;
+				String groupNameToShowStat = "allGroups";
 				if (type.equals("forGroup")) {
-					groupId = clientPullPusher.pullString();		
-				}
-				ArrayList<StructureProductDb> prodStatistics = productDB.getStatistics(groupId);
+					groupNameToShowStat = clientPullPusher.pullString();		
+				}				
+				ArrayList<StructureOfProductDB> prodStatistics = productDB.getStatistics(groupNameToShowStat);
 				clientPullPusher.pushProductList(prodStatistics);
 				
 				// statistics(); // string type ['forGroup', 'allGroups'],  [int groupId]
 				break;
 			case "search":
 				String searchPhrase = clientPullPusher.pullString();
-				ArrayList<StructureProductDb> matchedProducts = productDB.search(searchPhrase);
+				ArrayList<StructureOfProductDB> matchedProducts = productDB.search(searchPhrase);
 				clientPullPusher.pushProductList(matchedProducts);
 				
 				// search(); // string productName

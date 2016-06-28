@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import SharedTypes.StructureOfProductDB;
+
 public class GoodsManagerUI {
 	CollectionManager collectionManager; // класс для создания коллекций
 	ServerPullPusher serverPullPusher; // класс со списком команд для сервера
@@ -166,7 +168,7 @@ public class GoodsManagerUI {
 			public void actionPerformed(ActionEvent e) {
 				productComboBox.removeAll();
 				serverPullPusher.pushString("getProductList");
-				serverPullPusher.pushString(idGroup);
+				serverPullPusher.pushString((String) groupsComboBox.getSelectedItem());
 				products[0] = "Створити продукт";
 				products = collectionManager.getGroupProducts((String) groupsComboBox.getSelectedItem());				
 			}
@@ -212,7 +214,7 @@ public class GoodsManagerUI {
 					// productNumberChTextFieldText,
 					// productPriceTextFieldText));
 				} else {
-					serverPullPusher.pushString("editGroup"); // заменить на
+					serverPullPusher.pushString("editProduct"); // заменить на
 																// метод для
 																// товаров и
 																// учитывать что
@@ -254,6 +256,7 @@ public class GoodsManagerUI {
 				productManufacturerTextField.setText(prodArr[0]);
 				productNumberChTextField.setText(prodArr[2]);
 				productPriceTextField.setText(prodArr[3]);
+//				prodID.setText(productArr[4]);
 				
 				
 			}

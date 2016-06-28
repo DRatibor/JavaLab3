@@ -2,7 +2,7 @@ package Client;
 
 import java.util.ArrayList;
 
-import Server.StructureOfProductDB;
+import SharedTypes.*;
 
 public class CollectionManager {
 	ServerPullPusher serverPullPusher;
@@ -41,6 +41,18 @@ public class CollectionManager {
 		return productList;
 	}
 
+//	public ArrayList createGroupCollection(String groupName,
+//			String groupDescription) {
+//		ArrayList productList = new ArrayList();
+//		StructureOfGroupDB group = new StructureOfGroupDB();
+//		// group.setgroupId(null);
+//		group.setGroupName(groupName);
+//		group.setGroupDescription(groupDescription);
+//		productList.add(group);
+//		return productList;
+//	}
+	
+	
 	public ArrayList createGroupCollection(String groupName,
 			String groupDescription) {
 		ArrayList productList = new ArrayList();
@@ -96,7 +108,7 @@ public class CollectionManager {
 		ArrayList bigProductList = new ArrayList();
 		dataBaseBank.setProductList();
 		bigProductList = dataBaseBank.getProductList();
-		String[] productArr = new String[4];
+		String[] productArr = new String[5];
 		for (i = 0; i < bigProductList.size(); i++) {
 			if (nameOfProduct == ((StructureOfProductDB) bigProductList.get(i)).getProductName())
 				break;
@@ -108,5 +120,16 @@ public class CollectionManager {
 		return productArr;
 		
 	}
+	
+	
+	public StructureOfGroupDB createCollection(String groupName, String groupDescription) {
+		StructureOfGroupDB group = new StructureOfGroupDB();
+		group.setGroupName(groupName);
+		group.setGroupDescription(groupDescription);
+		
+		return group;
+	}
+
+	
 
 }

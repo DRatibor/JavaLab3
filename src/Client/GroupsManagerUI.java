@@ -144,10 +144,11 @@ public class GroupsManagerUI {
 					new FailureWindowUI();
 				}
 				else if (groupName.equals("Створити групу")) {
-					serverPullPusher.pushString("eddGroup");
-					serverPullPusher.pushListOfGroups(collectionManager
-							.createGroupCollection(groupTextField.getText(),
-							groupDescription));
+					serverPullPusher.pushString("addGroup");
+//					serverPullPusher.pushGroup();
+//					serverPullPusher.pushListOfGroups(collectionManager
+//							.createGroupCollection(groupTextField.getText(),
+//							groupDescription));
 				}else {
 					serverPullPusher.pushString("editGroup");
 					 serverPullPusher.pushListOfGroups(collectionManager
