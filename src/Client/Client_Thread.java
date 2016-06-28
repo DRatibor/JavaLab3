@@ -17,7 +17,7 @@ public class Client_Thread extends Thread {
 //        super.run();
     	System.out.println("эта штука в классе Client_Thread и методе Ран выполнилась");
         serverPullPusher = new ServerPullPusher(socket);
-        serverPullPusher.pushString("строка передана");
-        
+        serverPullPusher.pushString("InitPassword");
+        new MainUI(serverPullPusher);        
     }
 }

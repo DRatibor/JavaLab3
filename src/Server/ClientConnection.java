@@ -20,9 +20,9 @@ public class ClientConnection extends Thread{
 	 public void run() {
 
 		 	String msg1;
-	        while (keepConnection) {
+//	        while (keepConnection) {
 	        	System.out.println("цикл принятия строки запущен");
-	        msg1 = clientPullPusher.pullString();
+	        	msg1 = clientPullPusher.pullString();
 	        	System.out.println(msg1);
 	            switch (msg1) {
 	                case "Exit":
@@ -37,7 +37,7 @@ public class ClientConnection extends Thread{
 	                    if(checkPassword()) new DataBaseManager(clientPullPusher ,dataBaseCreator);
 	                    break;
 	            }
-	        }
+//	        }
 
 }
 

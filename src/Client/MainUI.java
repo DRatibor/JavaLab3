@@ -1,46 +1,54 @@
 package Client;
 
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
+
+import SharedTypes.StructureOfProductDB;
 
 public class MainUI {
 
-	// компоненты интерфейса
+	// ГЄГ®Г¬ГЇГ®Г­ГҐГ­ГІГ» ГЁГ­ГІГҐГ°ГґГҐГ©Г±Г 
+	CollectionManager collectionManager;
+	ArrayList<StructureOfProductDB> productDBArray = new ArrayList<StructureOfProductDB>();
 	ServerPullPusher serverPullPusher;
 	String searchText;
 	public Boolean visible = true;
-	JFrame frame; // фрейм
-	JButton groupsManagementButton; // кнопка открывает меню добавления/удаления
-									// и редактирования групп
-	JButton goodsManagementButton; // кнопка открывает меню поступления/списания
-									// и редактирования товаров
-	JButton statisticsWindowButton; // кнопка открывает меню статистики
-	JTextField searchFormTextField; // форма поиска товаров
-	JButton changesConfirmationButton; // кнопка подтверждающая изменения в
-										// таблице
-	JList<?> groupsList; // список групп товаров
-	JLabel currentGroupLabel; // надпись отображает текущую выбраную группу
-	JLabel totalLabel; // надпись "Загалом:" внизу формы
-	JTable goodsOfGroupTable; // центральная таблица со списком товаров группы
-	JTextField totalPriceTextField; // форма отображения суммарной цены товаров
-									// группы
-	JTextField totalQuantityTextField; // форма отображения суммарного
-										// количества товаров группы
+	JFrame frame; // ГґГ°ГҐГ©Г¬
+	JButton groupsManagementButton; // ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГї/ГіГ¤Г Г«ГҐГ­ГЁГї
+									// ГЁ Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї ГЈГ°ГіГЇГЇ
+	JButton goodsManagementButton; // ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ ГЇГ®Г±ГІГіГЇГ«ГҐГ­ГЁГї/Г±ГЇГЁГ±Г Г­ГЁГї
+									// ГЁ Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї ГІГ®ГўГ Г°Г®Гў
+	JButton statisticsWindowButton; // ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ Г±ГІГ ГІГЁГ±ГІГЁГЄГЁ
+	JTextField searchFormTextField; // ГґГ®Г°Г¬Г  ГЇГ®ГЁГ±ГЄГ  ГІГ®ГўГ Г°Г®Гў
+	JButton changesConfirmationButton; // ГЄГ­Г®ГЇГЄГ  ГЇГ®Г¤ГІГўГҐГ°Г¦Г¤Г ГѕГ№Г Гї ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГї Гў
+										// ГІГ ГЎГ«ГЁГ¶ГҐ
+	JList<?> groupsList; // Г±ГЇГЁГ±Г®ГЄ ГЈГ°ГіГЇГЇ ГІГ®ГўГ Г°Г®Гў
+	JLabel currentGroupLabel; // Г­Г Г¤ГЇГЁГ±Гј Г®ГІГ®ГЎГ°Г Г¦Г ГҐГІ ГІГҐГЄГіГ№ГіГѕ ГўГ»ГЎГ°Г Г­ГіГѕ ГЈГ°ГіГЇГЇГі
+	JLabel totalLabel; // Г­Г Г¤ГЇГЁГ±Гј "Г‡Г ГЈГ Г«Г®Г¬:" ГўГ­ГЁГ§Гі ГґГ®Г°Г¬Г»
+	JTable goodsOfGroupTable; // Г¶ГҐГ­ГІГ°Г Г«ГјГ­Г Гї ГІГ ГЎГ«ГЁГ¶Г  Г±Г® Г±ГЇГЁГ±ГЄГ®Г¬ ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
+	JTextField totalPriceTextField; // ГґГ®Г°Г¬Г  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї Г±ГіГ¬Г¬Г Г°Г­Г®Г© Г¶ГҐГ­Г» ГІГ®ГўГ Г°Г®Гў
+									// ГЈГ°ГіГЇГЇГ»
+	JTextField totalQuantityTextField; // ГґГ®Г°Г¬Г  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї Г±ГіГ¬Г¬Г Г°Г­Г®ГЈГ®
+										// ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
 
-	MainUI() {
+	MainUI(ServerPullPusher serverPullPusher) {
+		this.serverPullPusher = serverPullPusher;
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		frame = new JFrame("Система управління складом");
+		frame = new JFrame("Г‘ГЁГ±ГІГҐГ¬Г  ГіГЇГ°Г ГўГ«ВіГ­Г­Гї Г±ГЄГ«Г Г¤Г®Г¬");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new GridBagLayout());
 
-		componentsInitialization();// описываем компоненты
-		componentsPlacing();// размещаем компоненты
+		componentsInitialization();// Г®ГЇГЁГ±Г»ГўГ ГҐГ¬ ГЄГ®Г¬ГЇГ®Г­ГҐГ­ГІГ»
+		componentsPlacing();// Г°Г Г§Г¬ГҐГ№Г ГҐГ¬ ГЄГ®Г¬ГЇГ®Г­ГҐГ­ГІГ»
 
 		frame.setSize(1000, 600);
 		// frame.pack();
@@ -49,68 +57,68 @@ public class MainUI {
 
 	private void componentsPlacing() {
 
-		// ряд 1
+		// Г°ГїГ¤ 1
 
-		// кнопка открывает меню добавления/удаления и редактирования групп
+		// ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГї/ГіГ¤Г Г«ГҐГ­ГЁГї ГЁ Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї ГЈГ°ГіГЇГЇ
 		frame.add(groupsManagementButton, new GridBagConstraints(0, 0, 1, 1, 1,
 				1, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 2, 2), 0, 0));
 
-		// кнопка открывает меню поступления/списания и редактирования товаров
+		// ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ ГЇГ®Г±ГІГіГЇГ«ГҐГ­ГЁГї/Г±ГЇГЁГ±Г Г­ГЁГї ГЁ Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї ГІГ®ГўГ Г°Г®Гў
 		frame.add(goodsManagementButton, new GridBagConstraints(1, 0, 1, 1, 1,
 				1, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 2, 2), 0, 0));
 
-		// кнопка открывает меню статистики
+		// ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ Г±ГІГ ГІГЁГ±ГІГЁГЄГЁ
 		frame.add(statisticsWindowButton, new GridBagConstraints(2, 0, 1, 1, 1,
 				1, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 2, 2), 0, 0));
 
-		// форма поиска товаров
+		// ГґГ®Г°Г¬Г  ГЇГ®ГЁГ±ГЄГ  ГІГ®ГўГ Г°Г®Гў
 		frame.add(searchFormTextField, new GridBagConstraints(3, 0, 1, 1, 1, 1,
 				GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
 				new Insets(5, 2, 2, 2), 0, 0));
-		// кнопка подтверждающая изменения в таблице
+		// ГЄГ­Г®ГЇГЄГ  ГЇГ®Г¤ГІГўГҐГ°Г¦Г¤Г ГѕГ№Г Гї ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГї Гў ГІГ ГЎГ«ГЁГ¶ГҐ
 		frame.add(changesConfirmationButton, new GridBagConstraints(4, 0, 1, 1,
 				1, 1, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 5, 2), 0, 0));
 
-		// ряд 2
+		// Г°ГїГ¤ 2
 
-		// надпись отображает текущую выбраную группу
+		// Г­Г Г¤ГЇГЁГ±Гј Г®ГІГ®ГЎГ°Г Г¦Г ГҐГІ ГІГҐГЄГіГ№ГіГѕ ГўГ»ГЎГ°Г Г­ГіГѕ ГЈГ°ГіГЇГЇГі
 		frame.add(currentGroupLabel, new GridBagConstraints(0, 1, 1, 4, 1, 1,
 				GridBagConstraints.NORTH, GridBagConstraints.CENTER,
 				new Insets(2, 2, 2, 2), 0, 0));
 
-		// ряд 3
+		// Г°ГїГ¤ 3
 
 		// ???????
 
-		// ряд 4
+		// Г°ГїГ¤ 4
 
-		// список групп товаров
+		// Г±ГЇГЁГ±Г®ГЄ ГЈГ°ГіГЇГЇ ГІГ®ГўГ Г°Г®Гў
 		frame.add(groupsList, new GridBagConstraints(0, 4, 1, 11, 1, 1,
 				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 2, 2), 0, 0));
 
-		// центральная таблица со списком товаров группы
+		// Г¶ГҐГ­ГІГ°Г Г«ГјГ­Г Гї ГІГ ГЎГ«ГЁГ¶Г  Г±Г® Г±ГЇГЁГ±ГЄГ®Г¬ ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
 		frame.add(goodsOfGroupTable, new GridBagConstraints(1, 4, 10, 1, 1, 1,
 				GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 2, 2), 0, 0));
 
-		// ряд 5
+		// Г°ГїГ¤ 5
 
-		// надпись "Загалом:" внизу формы
+		// Г­Г Г¤ГЇГЁГ±Гј "Г‡Г ГЈГ Г«Г®Г¬:" ГўГ­ГЁГ§Гі ГґГ®Г°Г¬Г»
 		frame.add(totalLabel, new GridBagConstraints(1, 5, 1, 1, 1, 1,
 				GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 8, 2), 0, 0));
 
-		// форма отображения суммарного количества товаров группы
+		// ГґГ®Г°Г¬Г  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї Г±ГіГ¬Г¬Г Г°Г­Г®ГЈГ® ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
 		frame.add(totalQuantityTextField, new GridBagConstraints(2, 5, 1, 1, 1,
 				1, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 8, 2), 0, 0));
 
-		// форма отображения суммарной цены товаров группы
+		// ГґГ®Г°Г¬Г  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї Г±ГіГ¬Г¬Г Г°Г­Г®Г© Г¶ГҐГ­Г» ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
 		frame.add(totalPriceTextField, new GridBagConstraints(3, 5, 1, 1, 1, 1,
 				GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL,
 				new Insets(2, 2, 8, 2), 0, 0));
@@ -119,56 +127,70 @@ public class MainUI {
 
 	private void componentsInitialization() {
 
-		// кнопка открывает меню добавления/удаления и редактирования групп
-		groupsManagementButton = new JButton("Редагування групп");
+		// ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГї/ГіГ¤Г Г«ГҐГ­ГЁГї ГЁ Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї ГЈГ°ГіГЇГЇ
+		groupsManagementButton = new JButton("ГђГҐГ¤Г ГЈГіГўГ Г­Г­Гї ГЈГ°ГіГЇГЇ");
 		groupsManagementButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GroupsManagerUI();
+				GroupsManagerUI.getInstance(serverPullPusher);
 			}
 		});
 
-		// кнопка открывает меню поступления/списания и редактирования товаров
-		goodsManagementButton = new JButton("Додати/списати товар");
+		// ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ ГЇГ®Г±ГІГіГЇГ«ГҐГ­ГЁГї/Г±ГЇГЁГ±Г Г­ГЁГї ГЁ Г°ГҐГ¤Г ГЄГІГЁГ°Г®ГўГ Г­ГЁГї ГІГ®ГўГ Г°Г®Гў
+		goodsManagementButton = new JButton("Г„Г®Г¤Г ГІГЁ/Г±ГЇГЁГ±Г ГІГЁ ГІГ®ГўГ Г°");
 		goodsManagementButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GoodsManagerUI();
+				new GoodsManagerUI(serverPullPusher);
 			}
 		});
-		// кнопка открывает меню статистики
-		statisticsWindowButton = new JButton("Статистика");
+		// ГЄГ­Г®ГЇГЄГ  Г®ГІГЄГ°Г»ГўГ ГҐГІ Г¬ГҐГ­Гѕ Г±ГІГ ГІГЁГ±ГІГЁГЄГЁ
+		statisticsWindowButton = new JButton("Г‘ГІГ ГІГЁГ±ГІГЁГЄГ ");
 
-		// форма поиска товаров
+		// ГґГ®Г°Г¬Г  ГЇГ®ГЁГ±ГЄГ  ГІГ®ГўГ Г°Г®Гў
 		searchFormTextField = new JTextField();
-		searchFormTextField.setText("назва товару");
+		searchFormTextField.setText("Г­Г Г§ГўГ  ГІГ®ГўГ Г°Гі");
 
-		// надпись отображает текущую выбраную группу
+		// Г­Г Г¤ГЇГЁГ±Гј Г®ГІГ®ГЎГ°Г Г¦Г ГҐГІ ГІГҐГЄГіГ№ГіГѕ ГўГ»ГЎГ°Г Г­ГіГѕ ГЈГ°ГіГЇГЇГі
 		currentGroupLabel = new JLabel(
-				"ВСТАВИТЬ НАЗВАНИЕ ТЕКУЩЕЙ ГРУППЫ ТОВАРОВ");
+				"Г‚Г‘Г’ГЂГ‚Г€Г’Гњ ГЌГЂГ‡Г‚ГЂГЌГ€Г… Г’Г…ГЉГ“Г™Г…Г‰ ГѓГђГ“ГЏГЏГ› Г’ГЋГ‚ГЂГђГЋГ‚");
 
-		// список групп товаров
+		// Г±ГЇГЁГ±Г®ГЄ ГЈГ°ГіГЇГЇ ГІГ®ГўГ Г°Г®Гў
 		groupsList = new JList();
-		groupsList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				goodsOfGroupTable.removeAll();
-			}
-		});
+//		groupsList.setModel(collectionManager.doListModel());
+//		groupsList.addListSelectionListener(new ListSelectionListener() {
+//			public void valueChanged(ListSelectionEvent e) {
+//				goodsOfGroupTable.removeAll();
+//				serverPullPusher.pushString("statistics");
+//				if ((String) groupsList.getSelectedValue() != "РЈСЃС– РіСЂСѓРїРїРё"){
+//				serverPullPusher.pushString("allGroups");
+//				productDBArray = serverPullPusher.pullProductsList();
+//				}
+//				else{
+//				serverPullPusher.pushString("forGroup");
+//				serverPullPusher.pushString((String) groupsList.getSelectedValue());
+//				productDBArray = serverPullPusher.pullProductsList();
+//				}
+//			}
+//		});
 
-		// центральная таблица со списком товаров группы
+		// Г¶ГҐГ­ГІГ°Г Г«ГјГ­Г Гї ГІГ ГЎГ«ГЁГ¶Г  Г±Г® Г±ГЇГЁГ±ГЄГ®Г¬ ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
+//		TableModel model = new MyTableModel(productDBArray);
+//		goodsOfGroupTable = new JTable(model);
 		goodsOfGroupTable = new JTable();
+		//goodsOfGroupTable.getContentPane().add(new JScrollPane(goodsOfGroupTable));
 
-		// надпись "Загалом:" внизу формы
-		totalLabel = new JLabel("Загалом: ");
+		// Г­Г Г¤ГЇГЁГ±Гј "Г‡Г ГЈГ Г«Г®Г¬:" ГўГ­ГЁГ§Гі ГґГ®Г°Г¬Г»
+		totalLabel = new JLabel("Г‡Г ГЈГ Г«Г®Г¬: ");
 
-		// форма отображения суммарного количества товаров группы
+		// ГґГ®Г°Г¬Г  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї Г±ГіГ¬Г¬Г Г°Г­Г®ГЈГ® ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
 		totalQuantityTextField = new JTextField();
-		totalQuantityTextField.setText("КОЛИЧЕСТВО ТОВАРОВ");
+		totalQuantityTextField.setText("ГЉГЋГ‹Г€Г—Г…Г‘Г’Г‚ГЋ Г’ГЋГ‚ГЂГђГЋГ‚");
 
-		// форма отображения суммарной цены товаров группы
+		// ГґГ®Г°Г¬Г  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї Г±ГіГ¬Г¬Г Г°Г­Г®Г© Г¶ГҐГ­Г» ГІГ®ГўГ Г°Г®Гў ГЈГ°ГіГЇГЇГ»
 		totalPriceTextField = new JTextField();
-		totalPriceTextField.setText("ЦЕНА ТОВАРОВ");
+		totalPriceTextField.setText("Г–Г…ГЌГЂ Г’ГЋГ‚ГЂГђГЋГ‚");
 
-		// кнопка подтверждающая изменения в таблице
-		changesConfirmationButton = new JButton("Пошук");
+		// ГЄГ­Г®ГЇГЄГ  ГЇГ®Г¤ГІГўГҐГ°Г¦Г¤Г ГѕГ№Г Гї ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГї Гў ГІГ ГЎГ«ГЁГ¶ГҐ
+		changesConfirmationButton = new JButton("ГЏГ®ГёГіГЄ");
 		changesConfirmationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (searchText.equals("")) {
@@ -185,10 +207,10 @@ public class MainUI {
 	ActionListener actionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 
-			// поиск
+			// ГЇГ®ГЁГ±ГЄ
 			if (e.getSource() == changesConfirmationButton) {
-				searchText = searchFormTextField.getText();// правильный
-															// метод????
+				searchText = searchFormTextField.getText();// ГЇГ°Г ГўГЁГ«ГјГ­Г»Г©
+															// Г¬ГҐГІГ®Г¤????
 				if (searchText != null) {
 					serverPullPusher.pushString("search");
 					serverPullPusher.pushString(searchText);
@@ -199,7 +221,7 @@ public class MainUI {
 		}
 	};
 
-	public static void main(String[] args) {
-		new MainUI();
-	}
+//	public static void main(String[] args) {
+//		new MainUI();
+//	}
 }

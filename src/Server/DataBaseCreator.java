@@ -11,8 +11,10 @@ public class DataBaseCreator {
 			Class.forName("org.sqlite.JDBC");
 			connection = DriverManager.getConnection("jdbc:sqlite:" + name);
 			ProductDB prod = new ProductDB(connection); //убедится что это нужный класс
+			prod.createTableDataBase();
 			//добавить метод, который создает БД
 			GroupDB group = new GroupDB(connection); //убедится что это нужный класс
+			group.createTableDataBase();
 			//добавить мотод, который создает БД
 		} catch (SQLException e) {
 			e.printStackTrace();

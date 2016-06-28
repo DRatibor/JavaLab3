@@ -2,9 +2,14 @@ package Client;
 
 import java.util.ArrayList;
 
-import Server.StructureOfProductDB;
+import javax.swing.ListModel;
+
+import SharedTypes.*;
 
 public class CollectionManager {
+	ServerPullPusher serverPullPusher;
+
+	DataBaseBank dataBaseBank;
 
 	// // private String productGroup; // название группы
 	// // private String productName; // название товара
@@ -22,12 +27,17 @@ public class CollectionManager {
 	// // this.productPrice
 	// }
 
+	public CollectionManager(ServerPullPusher serverPullPusher, DataBaseBank dataBaseBank) {
+		this.serverPullPusher = serverPullPusher;
+		this.dataBaseBank = dataBaseBank;
+	}
+
 	public ArrayList<StructureOfProductDB> createProductCollection(
 			String productGroup, String productName, String productDescription,
 			String productManufacturer, int productAmount, double productPrice) {
 		ArrayList<StructureOfProductDB> productList = new ArrayList<StructureOfProductDB>();
 		StructureOfProductDB product = new StructureOfProductDB();
-		//product.setProductID(null);
+		// product.setProductID(null);
 		product.setProductGroup(productGroup);
 		product.setProductName(productName);
 		product.setProductDescription(productDescription);
@@ -38,8 +48,20 @@ public class CollectionManager {
 		return productList;
 	}
 
-	public ArrayList createGroupCollection(
-			String groupName, String groupDescription) {
+//	public ArrayList createGroupCollection(String groupName,
+//			String groupDescription) {
+//		ArrayList productList = new ArrayList();
+//		StructureOfGroupDB group = new StructureOfGroupDB();
+//		// group.setgroupId(null);
+//		group.setGroupName(groupName);
+//		group.setGroupDescription(groupDescription);
+//		productList.add(group);
+//		return productList;
+//	}
+	
+	
+	public ArrayList createGroupCollection(String groupName,
+			String groupDescription) {
 		ArrayList productList = new ArrayList();
 		StructureOfGroupDB group = new StructureOfGroupDB();
 		// group.setgroupId(null);
@@ -48,17 +70,88 @@ public class CollectionManager {
 		productList.add(group);
 		return productList;
 	}
-	
-	public String[] createGroupCollection(
-			String groupName, String groupDescription) {
-		ArrayList productList = new ArrayList();
-		StructureOfGroupDB group = new StructureOfGroupDB();
-		// group.setgroupId(null);
-		group.setGroupName(groupName);
-		group.setGroupDescription(groupDescription);
-		productList.add(group);
+
+	public String[] arrayOfGroupsInGropCollection() {
+		ArrayList bigGroupList = new ArrayList();
+		bigGroupList = dataBaseBank.getGroupList();
+		bigGroupList.size();
+		String[] groupList = new String[bigGroupList.size()];
+		for (int i = 0; i < bigGroupList.size(); i++) {
+			groupList[i] = ((StructureOfGroupDB) bigGroupList.get(i))
+					.getGroupName();
+		}
+		return groupList;
+	}
+
+	public String groupDiscription(String nameOfGroup) {
+		String groupDiscription = null;
+		ArrayList bigGroupList = new ArrayList();
+		bigGroupList = dataBaseBank.getGroupList();
+		bigGroupList.size();
+		for (int i = 0; i < bigGroupList.size(); i++) {
+			if (nameOfGroup == ((StructureOfGroupDB) bigGroupList.get(i))
+					.getGroupName())
+				groupDiscription = ((StructureOfGroupDB) bigGroupList.get(i))
+						.getGroupDescription();
+		}
+		return groupDiscription;
+	}
+
+	public String[] getGroupProducts(String nameOfGroup) {
+		ArrayList bigProductList = new ArrayList();
+		try {
+			dataBaseBank.setProductList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		bigProductList = dataBaseBank.getProductList();
+		bigProductList.size();
+		String[] productList = new String[bigProductList.size()];
+		for (int i = 1; i <= bigProductList.size(); i++) {
+			productList[i] = ((StructureOfProductDB) bigProductList.get(i-1))
+					.getProductName();
+		}
 		return productList;
+	}
+
+	public String[] addProductData(String nameOfProduct) {
+		int i;
+		ArrayList bigProductList = new ArrayList();
+		try {
+			dataBaseBank.setProductList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		bigProductList = dataBaseBank.getProductList();
+		String[] productArr = new String[5];
+		for (i = 0; i < bigProductList.size(); i++) {
+			if (nameOfProduct == ((StructureOfProductDB) bigProductList.get(i)).getProductName())
+				break;
+		}
+		productArr[0] = ((StructureOfProductDB) bigProductList.get(i)).getProductManufacturer();
+		productArr[1] = ((StructureOfProductDB) bigProductList.get(i)).getProductDescription();
+		productArr[2] = String.valueOf(((StructureOfProductDB) bigProductList.get(i)).getProductAmount());
+		productArr[3] = String.valueOf(((StructureOfProductDB) bigProductList.get(i)).getProductPrice());
+		return productArr;
+		
 	}
 	
 	
+	public StructureOfGroupDB createGroup(String groupName, String groupDescription) {
+		StructureOfGroupDB group = new StructureOfGroupDB();
+		group.setGroupName(groupName);
+		group.setGroupDescription(groupDescription);
+		
+		return group;
+	}
+
+	public ListModel<?> doListModel() {
+		ListModel<?> lm = null;
+		return lm;
+	}
+
+	
+
 }

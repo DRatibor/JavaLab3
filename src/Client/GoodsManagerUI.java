@@ -8,21 +8,25 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import SharedTypes.StructureOfProductDB;
+
 public class GoodsManagerUI {
-	CollectionManager collectionCreator; // класс для создания коллекций
+	CollectionManager collectionManager; // класс для создания коллекций
 	ServerPullPusher serverPullPusher; // класс со списком команд для сервера
+	DataBaseBank dataBaseBank;
 
 	String productName, groupsComboBoxText, productDescriptionTextAreaText,
 			productComboBoxText, productManufacturerTextFieldText;
 	double productPriceTextFieldText;
 	int productNumberChTextFieldText;
+	String[] products;
 
 	public JFrame frame; // фрейм
 	JLabel groupNameLabel; // надпись "Назва групи"
 	JLabel productNameLabel; // надпись "Назва товару"
 	JLabel productDescriptionLabel; // надпись "Опис товару"
 	JLabel productNumberChLabel; // надпись "Одиниць надійшло"
-	JComboBox<?> groupsComboBox; // выпадающий список групп
+	JComboBox<Object> groupsComboBox; // выпадающий список групп
 	JTextField productTextField; // поле название нового товара
 	JTextField productDescriptionTextArea; // текстовая форма описания товара
 	JTextField productNumberChTextField; // изменение в количестве товара
@@ -35,7 +39,10 @@ public class GoodsManagerUI {
 	JTextField productPriceTextField; // поле с ценой товара
 	JButton deleteButton; // конопка удаления
 
-	GoodsManagerUI() {
+	GoodsManagerUI(ServerPullPusher serverPullPusher) {
+		this.serverPullPusher = serverPullPusher;
+		this.dataBaseBank = new DataBaseBank(serverPullPusher);
+		collectionManager = new CollectionManager(serverPullPusher,dataBaseBank);
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame = new JFrame("Редагування/додавання груп товарів");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -156,7 +163,25 @@ public class GoodsManagerUI {
 		productNumberChLabel = new JLabel("Одиниць надійшло");
 
 		// выпадающий список групп
-		groupsComboBox = new JComboBox();
+		serverPullPusher.pushString("getGroupList");
+		
+		try {
+			dataBaseBank.setGroupList();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String[] items = collectionManager.arrayOfGroupsInGropCollection();
+		groupsComboBox = new JComboBox<Object>(items);
+		groupsComboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				productComboBox.removeAll();
+				serverPullPusher.pushString("getProductList");
+				serverPullPusher.pushString((String) groupsComboBox.getSelectedItem());
+				products[0] = "Створити продукт";
+				products = collectionManager.getGroupProducts((String) groupsComboBox.getSelectedItem());				
+			}
+		});
 
 		// поле название нового товара
 		productTextField = new JTextField();
@@ -198,7 +223,7 @@ public class GoodsManagerUI {
 					// productNumberChTextFieldText,
 					// productPriceTextFieldText));
 				} else {
-					serverPullPusher.pushString("editGroup"); // заменить на
+					serverPullPusher.pushString("editProduct"); // заменить на
 																// метод для
 																// товаров и
 																// учитывать что
@@ -232,7 +257,19 @@ public class GoodsManagerUI {
 		productPriceLabel = new JLabel("Ціна");
 
 		// выпадающий список товаров
-		productComboBox = new JComboBox();
+		productComboBox = new JComboBox(products);
+		productComboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] prodArr = collectionManager.addProductData((String) productComboBox.getSelectedItem());
+				productDescriptionTextArea.setText(prodArr[1]);
+				productManufacturerTextField.setText(prodArr[0]);
+				productNumberChTextField.setText(prodArr[2]);
+				productPriceTextField.setText(prodArr[3]);
+//				prodID.setText(productArr[4]);
+				
+				
+			}
+		});
 
 		// поле с производителем
 		productManufacturerTextField = new JTextField();
@@ -256,7 +293,7 @@ public class GoodsManagerUI {
 		});
 	}
 
-	public static void main(String[] args) {
-		new GoodsManagerUI();
-	}
+//	public static void main(String[] args) {
+//		new GoodsManagerUI();
+//	}
 }
