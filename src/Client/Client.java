@@ -15,6 +15,7 @@ public class Client extends Thread {
 			addr = InetAddress.getByName(null);
 			socket = new Socket(addr,PORT);
 			new Client_Thread(socket);
+			//new MainUI();
 			//new LoginPassUI(socket);
 			
 		} catch (IOException e) {

@@ -7,7 +7,7 @@ public class StructureOfGroupDB implements Serializable {
 	private int groupId;
 	private String groupName; // название группы
 	private String groupDescription; // описание группы
-	private final static String groupTableName = "Group table";
+	private final static String groupTableName = "group_table";
 	
 	// создаем таблицу таблицу со всеми группами товаров
 

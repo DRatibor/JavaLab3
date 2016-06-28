@@ -26,7 +26,7 @@ public class GoodsManagerUI {
 	JLabel productNameLabel; // надпись "Назва товару"
 	JLabel productDescriptionLabel; // надпись "Опис товару"
 	JLabel productNumberChLabel; // надпись "Одиниць надійшло"
-	JComboBox groupsComboBox; // выпадающий список групп
+	JComboBox<Object> groupsComboBox; // выпадающий список групп
 	JTextField productTextField; // поле название нового товара
 	JTextField productDescriptionTextArea; // текстовая форма описания товара
 	JTextField productNumberChTextField; // изменение в количестве товара
@@ -39,7 +39,10 @@ public class GoodsManagerUI {
 	JTextField productPriceTextField; // поле с ценой товара
 	JButton deleteButton; // конопка удаления
 
-	GoodsManagerUI() {
+	GoodsManagerUI(ServerPullPusher serverPullPusher) {
+		this.serverPullPusher = serverPullPusher;
+		this.dataBaseBank = new DataBaseBank(serverPullPusher);
+		collectionManager = new CollectionManager(serverPullPusher,dataBaseBank);
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame = new JFrame("Редагування/додавання груп товарів");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -161,7 +164,13 @@ public class GoodsManagerUI {
 
 		// выпадающий список групп
 		serverPullPusher.pushString("getGroupList");
-		dataBaseBank.setGroupList();
+		
+		try {
+			dataBaseBank.setGroupList();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		String[] items = collectionManager.arrayOfGroupsInGropCollection();
 		groupsComboBox = new JComboBox<Object>(items);
 		groupsComboBox.addActionListener(new ActionListener() {
@@ -284,7 +293,7 @@ public class GoodsManagerUI {
 		});
 	}
 
-	public static void main(String[] args) {
-		new GoodsManagerUI();
-	}
+//	public static void main(String[] args) {
+//		new GoodsManagerUI();
+//	}
 }

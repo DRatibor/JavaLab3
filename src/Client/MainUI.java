@@ -5,14 +5,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
+
+import SharedTypes.StructureOfProductDB;
 
 public class MainUI {
 
 	// êîìïîíåíòû èíòåðôåéñà
+	CollectionManager collectionManager;
 	ArrayList<StructureOfProductDB> productDBArray = new ArrayList<StructureOfProductDB>();
 	ServerPullPusher serverPullPusher;
 	String searchText;
@@ -35,7 +40,8 @@ public class MainUI {
 	JTextField totalQuantityTextField; // ôîðìà îòîáðàæåíèÿ ñóììàðíîãî
 										// êîëè÷åñòâà òîâàðîâ ãðóïïû
 
-	MainUI() {
+	MainUI(ServerPullPusher serverPullPusher) {
+		this.serverPullPusher = serverPullPusher;
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame = new JFrame("Ñèñòåìà óïðàâë³ííÿ ñêëàäîì");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -125,7 +131,7 @@ public class MainUI {
 		groupsManagementButton = new JButton("Ðåäàãóâàííÿ ãðóïï");
 		groupsManagementButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GroupsManagerUI();
+				GroupsManagerUI.getInstance(serverPullPusher);
 			}
 		});
 
@@ -133,7 +139,7 @@ public class MainUI {
 		goodsManagementButton = new JButton("Äîäàòè/ñïèñàòè òîâàð");
 		goodsManagementButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new GoodsManagerUI();
+				new GoodsManagerUI(serverPullPusher);
 			}
 		});
 		// êíîïêà îòêðûâàåò ìåíþ ñòàòèñòèêè
@@ -149,27 +155,28 @@ public class MainUI {
 
 		// ñïèñîê ãðóïï òîâàðîâ
 		groupsList = new JList();
-		groupsList.setModel(collectionManager.doListModel())
-		groupsList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				goodsOfGroupTable.removeAll();
-				serverPullPusher.pushString("statistics")
-				if (groupsList.getValue() != "Усі группи"){
-				serverPullPusher.pushString("allGroups");
-				productDBArray = serverPullPusher.pullProductList();
-				}
-				else{
-				serverPullPusher.pushString("forGroup");
-				serverPullPusher.pushString(groupsList.getValue());
-				productDBArray = serverPullPusher.pullProductList();
-				}
-			}
-		});
+//		groupsList.setModel(collectionManager.doListModel());
+//		groupsList.addListSelectionListener(new ListSelectionListener() {
+//			public void valueChanged(ListSelectionEvent e) {
+//				goodsOfGroupTable.removeAll();
+//				serverPullPusher.pushString("statistics");
+//				if ((String) groupsList.getSelectedValue() != "Усі группи"){
+//				serverPullPusher.pushString("allGroups");
+//				productDBArray = serverPullPusher.pullProductsList();
+//				}
+//				else{
+//				serverPullPusher.pushString("forGroup");
+//				serverPullPusher.pushString((String) groupsList.getSelectedValue());
+//				productDBArray = serverPullPusher.pullProductsList();
+//				}
+//			}
+//		});
 
 		// öåíòðàëüíàÿ òàáëèöà ñî ñïèñêîì òîâàðîâ ãðóïïû
-		TableModel model = new MyTableModel(productDBArray);
-		goodsOfGroupTable = new JTable(model);
-		getContentPane().add(new JScrollPane(goodsOfGroupTable));
+//		TableModel model = new MyTableModel(productDBArray);
+//		goodsOfGroupTable = new JTable(model);
+		goodsOfGroupTable = new JTable();
+		//goodsOfGroupTable.getContentPane().add(new JScrollPane(goodsOfGroupTable));
 
 		// íàäïèñü "Çàãàëîì:" âíèçó ôîðìû
 		totalLabel = new JLabel("Çàãàëîì: ");
@@ -214,7 +221,7 @@ public class MainUI {
 		}
 	};
 
-	public static void main(String[] args) {
-		new MainUI();
-	}
+//	public static void main(String[] args) {
+//		new MainUI();
+//	}
 }

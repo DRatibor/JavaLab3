@@ -1,10 +1,21 @@
+package Client;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+
+import SharedTypes.StructureOfProductDB;
+
 public class MyTableModel implements TableModel {
  
         private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
  
-        private List<StructureOfProductDB> structureOfProductDB;
+        private ArrayList<StructureOfProductDB> structureOfProductDB;
  
-        public MyTableModel(List<StructureOfProductDB> structureOfProductDB) {
+        public MyTableModel(ArrayList<StructureOfProductDB> structureOfProductDB) {
             this.structureOfProductDB = structureOfProductDB;
         }
  
@@ -32,26 +43,27 @@ public class MyTableModel implements TableModel {
                 return "Кількість";
             case 4:
                 return "Ціна";
+        }
             return "";
         }
  
         public int getRowCount() {
-            return beans.size();
+            return structureOfProductDB.size();
         }
  
         public Object getValueAt(int rowIndex, int columnIndex) {
-            MyBean bean = beans.get(rowIndex);
+        	StructureOfProductDB structureOfProduct = structureOfProductDB.get(rowIndex);
             switch (columnIndex) {
             case 0:
-                return structureOfProductDB.getProductName();
+                return structureOfProduct.getProductName();
             case 1:
-                return structureOfProductDB.getProductManufacturer();
+                return structureOfProduct.getProductManufacturer();
             case 2:
-                return structureOfProductDB.getProductDescription();
+                return structureOfProduct.getProductDescription();
                 case 3:
-                return structureOfProductDB.getProductAmount();
+                return structureOfProduct.getProductAmount();
             case 4:
-                return structureOfProductDB.getProductPrice();
+                return structureOfProduct.getProductPrice();
             }
             return "";
         }

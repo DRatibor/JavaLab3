@@ -15,6 +15,7 @@ public class DataBaseManager extends Thread {
 
 	DataBaseManager(ClientPullPusher clientPullPusher,
 			DataBaseCreator dataBaseCreator) {
+		System.out.println("DataBaseManager запущен");
 		this.clientPullPusher = clientPullPusher;
 		this.dataBaseCreator = dataBaseCreator;
 		groupDB = new GroupDB(dataBaseCreator.getConnection());
@@ -27,12 +28,15 @@ public class DataBaseManager extends Thread {
 
 		while (serverconnection == true) {
 
+//			System.out.println(clientPullPusher.pullString());
+//			break;
+			
 			switch (clientPullPusher.pullString()) {
 
 			case "addProduct":
 				StructureOfProductDB product = clientPullPusher.pullProduct();
 				Boolean dbResponse = productDB.add(product);
-				clientPullPusher.pushBoolean(dbResponse);
+				//clientPullPusher.pushBoolean(dbResponse);
 				
 				// addProduct(); // StructureProductDb
 				break;
@@ -43,16 +47,17 @@ public class DataBaseManager extends Thread {
 				
 				// getProductList(); // int groupId
 				break;		
-			case "getGroupList":
+			case "getGroupList":					
 				ArrayList<StructureOfGroupDB> groupList = groupDB.getList();
 				clientPullPusher.pushGroupList(groupList);
-				
+				return;
 				// getGroupList(); 
-				break;
+//				break;
+				
 			case "deleteAllInGroup":
 				String groupNameToDeleteIn = clientPullPusher.pullString();
 				Boolean productsIngroupDeleted = productDB.deleteAllInGroup(groupNameToDeleteIn);
-				clientPullPusher.pushBoolean(productsIngroupDeleted);
+				//clientPullPusher.pushBoolean(productsIngroupDeleted);
 				
 				// editProduct(); // StructureProductDb
 				break;	
@@ -61,7 +66,7 @@ public class DataBaseManager extends Thread {
 				StructureOfProductDB productToIncreaseAmount = clientPullPusher.pullProduct();
 				int increaseOnValue = clientPullPusher.pullInt();
 				Boolean amountIncreased = productDB.increaseAmount(productToIncreaseAmount, increaseOnValue);
-				clientPullPusher.pushBoolean(amountIncreased);
+				//clientPullPusher.pushBoolean(amountIncreased);
 				
 				// editProduct(); // StructureProductDb
 				break;
@@ -69,42 +74,42 @@ public class DataBaseManager extends Thread {
 				StructureOfProductDB productToDecreaseAmount = clientPullPusher.pullProduct();
 				int decreaseOnValue = clientPullPusher.pullInt();
 				Boolean amountDecreased = productDB.decreaseAmount(productToDecreaseAmount, decreaseOnValue);
-				clientPullPusher.pushBoolean(amountDecreased);
+				//clientPullPusher.pushBoolean(amountDecreased);
 				
 				// editProduct(); // StructureProductDb
 				break;
 			case "editProduct":
 				StructureOfProductDB productToEdit = clientPullPusher.pullProduct();
 				Boolean productUpdated = productDB.update(productToEdit);
-				clientPullPusher.pushBoolean(productUpdated);
+				//clientPullPusher.pushBoolean(productUpdated);
 				
 				// editProduct(); // StructureProductDb
 				break;
 			case "delProduct":
 				StructureOfProductDB productToDelete = clientPullPusher.pullProduct();
 				Boolean productDeleted = productDB.delete(productToDelete);
-				clientPullPusher.pushBoolean(productDeleted);
+				//clientPullPusher.pushBoolean(productDeleted);
 				
 				// delProduct(); // int prodId
 				break;
 			case "addGroup":
 				StructureOfGroupDB group = clientPullPusher.pullGroup();
 				Boolean groupAdded = groupDB.add(group);
-				clientPullPusher.pushBoolean(groupAdded);
+				//clientPullPusher.pushBoolean(groupAdded);
 				
 				// addGroup(); // 
 				break;
 			case "editGroup":
 				StructureOfGroupDB groupToEdit = clientPullPusher.pullGroup();
 				Boolean groupUpdated = groupDB.update(groupToEdit);
-				clientPullPusher.pushBoolean(groupUpdated);
+				//clientPullPusher.pushBoolean(groupUpdated);
 				
 				// editGroup();
 				break;
 			case "delGroup":
 				StructureOfGroupDB groupToDelete = clientPullPusher.pullGroup();
 				Boolean groupDeleted = groupDB.delete(groupToDelete);
-				clientPullPusher.pushBoolean(groupDeleted);
+				//clientPullPusher.pushBoolean(groupDeleted);
 				
 				// delGroup();
 				break;

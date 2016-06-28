@@ -26,21 +26,38 @@ public class GroupsManagerUI {
 	JTextField groupDescriptionTextArea; // текстовая форма описания группы
 	JButton changesConfirmationButton; // кнопка подтверждающая изменения
 	JButton deleteButton; // конопка удаления
+	static GroupsManagerUI instance;
 
-	GroupsManagerUI() {
+	GroupsManagerUI(ServerPullPusher serverPullPusher) {
+		
+		this.dataBaseBank = new DataBaseBank(serverPullPusher);
+		collectionManager = new CollectionManager(serverPullPusher,dataBaseBank);
+		this.serverPullPusher=serverPullPusher;
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame = new JFrame("Редагування/додавання груп товарів");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLayout(new GridBagLayout());
+		System.out.println("Запустили группы");
 
 		componentsInitialization();// описываем компоненты
+		
+		System.out.println("компоненты инициализированны");
+		
 		componentsPlacing();// размещаем компоненты
+		
+		System.out.println("компоненты размещенны");
 
 		frame.setSize(400, 120);
 		// frame.pack();
 
 		frame.setVisible(true);
 
+	}
+	public static GroupsManagerUI getInstance(ServerPullPusher serverPullPusher){
+		if(instance == null) instance = new GroupsManagerUI(serverPullPusher);
+		
+		return instance;
+		
 	}
 
 	public void windowClosing(WindowEvent e) {// будет просто так работать?
@@ -102,15 +119,34 @@ public class GroupsManagerUI {
 		groupDescriptionLabel = new JLabel("Опис групи");
 
 		// выпадающий список групп
+//		System.out.println("пытаемся пушнуть на сервер команду с запросом списка групп");
+		
 		serverPullPusher.pushString("getGroupList");
-		dataBaseBank.setGroupList();
+		
+//		try {
+//			serverPullPusher.pullGroupList();
+//		} catch (Exception e3) {
+//			// TODO Auto-generated catch block
+//			e3.printStackTrace();
+//		}
+		
+//		return;
+		
+		
+		System.out.println("попытка удась");
+		try {
+			dataBaseBank.setGroupList();
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		String[] items = collectionManager.arrayOfGroupsInGropCollection();
 		String[] itemsAndAdd = new String[items.length+1];
 		for (int i=1; i<=items.length; i++){
 			itemsAndAdd[i] = items[i-1];
 		}
 		itemsAndAdd[0]= "Створити групу";
-		groupsComboBox = new JComboBox(items);
+		groupsComboBox = new JComboBox(itemsAndAdd);
 		groupsComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if ((String) groupsComboBox.getSelectedItem() != "Створити групу") {
@@ -145,15 +181,32 @@ public class GroupsManagerUI {
 				}
 				else if (groupName.equals("Створити групу")) {
 					serverPullPusher.pushString("addGroup");
-//					serverPullPusher.pushGroup();
+					
+					try {
+						serverPullPusher.pushGroup(collectionManager
+								 .createGroup(groupName,
+										 groupDescription));
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 //					serverPullPusher.pushListOfGroups(collectionManager
 //							.createGroupCollection(groupTextField.getText(),
 //							groupDescription));
 				}else {
 					serverPullPusher.pushString("editGroup");
-					 serverPullPusher.pushListOfGroups(collectionManager
-					 .createGroupCollection(groupName,
-					 groupDescription));
+					try {
+						serverPullPusher.pushGroup(collectionManager
+								 .createGroup(groupName,
+										 groupDescription));
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+//					
+//					 serverPullPusher.pushListOfGroups(collectionManager
+//					 .createGroupCollection(groupName,
+//					 groupDescription));
 					groupName = null;
 					groupDescription = null;
 				}
@@ -175,41 +228,45 @@ public class GroupsManagerUI {
 			}
 		});
 
-//		ActionListener actionListener = new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//
-//				// если выбрали кнопку удаления
-//				if (e.getSource() == deleteButton) {
-//					groupName = (String) groupsComboBox.getSelectedItem();
-//					if (groupName != null) {
-//						serverPullPusher.pushString("delGroup");
-//						serverPullPusher.pushString(groupName);
-//						groupName = null;
-//					} else
-//						new FailureWindowUI();
-//				}
-//
-//				// если выбрали кнопку редактирования
-//				else if (e.getSource() == changesConfirmationButton) {
-//					groupName = (String) groupsComboBox.getSelectedItem();
-//					groupDescription = groupDescriptionTextArea.getText();
-//					if (groupName != null && groupDescription != null) {
-//						serverPullPusher.pushString("editGroup");
-//						// serverPullPusher.pushListOfGroups(collectionCreator
-//						// .createGroupCollection(groupName,
-//						// groupDescription));
-//						groupName = null;
-//						groupDescription = null;
-//					} else
-//						new FailureWindowUI();
-//				} else if (e.getSource() == groupsComboBox) {
-//					groupDescriptionTextArea.setText("ААААААА");
-//				}
-//			}
-//		};
+		ActionListener actionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				// если выбрали кнопку удаления
+				if (e.getSource() == deleteButton) {
+					groupName = (String) groupsComboBox.getSelectedItem();
+					if (groupName != null) {
+						serverPullPusher.pushString("delGroup");
+						serverPullPusher.pushString(groupName);
+						groupName = null;
+					} else
+						new FailureWindowUI();
+				}
+
+				// если выбрали кнопку редактирования
+				else if (e.getSource() == changesConfirmationButton) {
+					groupName = (String) groupsComboBox.getSelectedItem();
+					groupDescription = groupDescriptionTextArea.getText();
+					if (groupName != null && groupDescription != null) {
+						serverPullPusher.pushString("addGroup");
+						 try {
+							serverPullPusher.pushGroup(collectionManager.createGroup(groupName,
+							 groupDescription));
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						groupName = null;
+						groupDescription = null;
+					} else
+						new FailureWindowUI();
+				} else if (e.getSource() == groupsComboBox) {
+					groupDescriptionTextArea.setText("ААААААА");
+				}
+			}
+		};
 	}
 
-	public static void main(String[] args) {
-		new GroupsManagerUI();
-	}
+//	public static void main(String[] args) {
+//		new GroupsManagerUI();
+//	}
 }

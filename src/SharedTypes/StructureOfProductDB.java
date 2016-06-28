@@ -11,7 +11,7 @@ public class StructureOfProductDB implements Serializable {
 	private int productID; // идентификатор продукта
 	private int productAmount; // количество товара
 	private double productPrice; // цена товара
-	private final static String productTableName = "Product table";
+	private final static String productTableName = "product_table";
 
 	// создаем таблицу таблицу со всеми продуктами
 

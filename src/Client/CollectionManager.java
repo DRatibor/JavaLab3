@@ -2,6 +2,8 @@ package Client;
 
 import java.util.ArrayList;
 
+import javax.swing.ListModel;
+
 import SharedTypes.*;
 
 public class CollectionManager {
@@ -24,6 +26,11 @@ public class CollectionManager {
 	// // this.productAmount
 	// // this.productPrice
 	// }
+
+	public CollectionManager(ServerPullPusher serverPullPusher, DataBaseBank dataBaseBank) {
+		this.serverPullPusher = serverPullPusher;
+		this.dataBaseBank = dataBaseBank;
+	}
 
 	public ArrayList<StructureOfProductDB> createProductCollection(
 			String productGroup, String productName, String productDescription,
@@ -92,7 +99,12 @@ public class CollectionManager {
 
 	public String[] getGroupProducts(String nameOfGroup) {
 		ArrayList bigProductList = new ArrayList();
-		dataBaseBank.setProductList();
+		try {
+			dataBaseBank.setProductList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		bigProductList = dataBaseBank.getProductList();
 		bigProductList.size();
 		String[] productList = new String[bigProductList.size()];
@@ -106,7 +118,12 @@ public class CollectionManager {
 	public String[] addProductData(String nameOfProduct) {
 		int i;
 		ArrayList bigProductList = new ArrayList();
-		dataBaseBank.setProductList();
+		try {
+			dataBaseBank.setProductList();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		bigProductList = dataBaseBank.getProductList();
 		String[] productArr = new String[5];
 		for (i = 0; i < bigProductList.size(); i++) {
@@ -122,12 +139,17 @@ public class CollectionManager {
 	}
 	
 	
-	public StructureOfGroupDB createCollection(String groupName, String groupDescription) {
+	public StructureOfGroupDB createGroup(String groupName, String groupDescription) {
 		StructureOfGroupDB group = new StructureOfGroupDB();
 		group.setGroupName(groupName);
 		group.setGroupDescription(groupDescription);
 		
 		return group;
+	}
+
+	public ListModel<?> doListModel() {
+		ListModel<?> lm = null;
+		return lm;
 	}
 
 	

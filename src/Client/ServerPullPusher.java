@@ -23,6 +23,7 @@ public class ServerPullPusher {
 			objIo = new ObjectInputStream(socket.getInputStream());
 
 		} catch (IOException e) {
+			System.out.println("error here");
 			e.printStackTrace();
 		}
 	}
@@ -33,6 +34,7 @@ public class ServerPullPusher {
 
 	public void pushString(String string) {
 		try {
+			System.out.println("Клиент пишет стринг");
 			ou.writeUTF(string);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -41,6 +43,7 @@ public class ServerPullPusher {
 
 	public String pullString() {
 		try {
+			System.out.println("Клиент читает стринг");
 			return io.readUTF();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,6 +53,7 @@ public class ServerPullPusher {
 
 	public void pushChar(char charr) {
 		try {
+			System.out.println("Клиент пишет чар");
 			ou.write(charr);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -58,6 +62,7 @@ public class ServerPullPusher {
 
 	public void pushInt(int i) {
 		try {
+			System.out.println("Клиент пишет инт");
 			ou.writeInt(i);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -66,6 +71,7 @@ public class ServerPullPusher {
 
 	public int pullInt() {
 		try {
+			System.out.println("Клиент читает инт");
 			return io.readInt();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -75,6 +81,7 @@ public class ServerPullPusher {
 
 	public void pushDouble(double d) {
 		try {
+			System.out.println("Клиент пишет дабл");
 			ou.writeDouble(d);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -83,6 +90,7 @@ public class ServerPullPusher {
 
 	public double pullDouble() {
 		try {
+			System.out.println("Клиент читает дабл");
 			return io.readDouble();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -92,6 +100,7 @@ public class ServerPullPusher {
 
 	public void pushBoolean(boolean b) {
 		try {
+			System.out.println("Клиент пишет булеан");
 			ou.writeBoolean(b);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -100,6 +109,7 @@ public class ServerPullPusher {
 
 	public boolean pullBoolean() {
 		try {
+			System.out.println("Клиент читает булеан");
 			return io.readBoolean();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -108,33 +118,39 @@ public class ServerPullPusher {
 	}
 	
 	
-	public void pushGroup(StructureOfGroupDB groupToServer) throws Exception {				
+	public void pushGroup(StructureOfGroupDB groupToServer) throws Exception {
+		System.out.println("Клиент пишет группу");
 		objOu.writeObject(groupToServer);
 	}
 	
-	public void pushProduct(StructureOfProductDB productToServer) throws Exception {				
+	public void pushProduct(StructureOfProductDB productToServer) throws Exception {
+		System.out.println("Клиент пишет продукт");
 		objOu.writeObject(productToServer);
 	}
 	
 	public StructureOfGroupDB pullGroup() throws Exception {
+		System.out.println("Клиент читает группу");
 		StructureOfGroupDB groupFromServer = (StructureOfGroupDB) objIo.readObject();
 		
 		return groupFromServer;
 	}
 	
 	public StructureOfProductDB pullProduct() throws Exception {
+		System.out.println("Клиент читает продукт");
 		StructureOfProductDB productFromServer = (StructureOfProductDB) objIo.readObject();
 		
 		return productFromServer;
 	}
 	
 	public ArrayList<StructureOfGroupDB> pullGroupList () throws Exception {
+		System.out.println("Клиент читает список групп");
 		ArrayList<StructureOfGroupDB> listOfGroupsFromServer = (ArrayList<StructureOfGroupDB>) objIo.readObject(); 
 		
 		return listOfGroupsFromServer;
 	}
 	
 	public ArrayList<StructureOfProductDB> pullProductsList () throws Exception {
+		System.out.println("Клиент читает список продуктов");
 		ArrayList<StructureOfProductDB> listOfProductsFromServer = (ArrayList<StructureOfProductDB>) objIo.readObject(); 
 		
 		return listOfProductsFromServer;

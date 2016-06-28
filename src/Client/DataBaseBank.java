@@ -7,6 +7,10 @@ public class DataBaseBank {
 	ArrayList groupList = new ArrayList();
 	ArrayList productList = new ArrayList();
 
+	DataBaseBank (ServerPullPusher serverPullPusher) {
+		this.serverPullPusher = serverPullPusher;
+	}
+	
 	public ArrayList getGroupList() {
 		return groupList;
 	}
@@ -15,12 +19,12 @@ public class DataBaseBank {
 		return productList;
 	}
 
-	public void setGroupList() {
-		groupList = serverPullPusher.pullListOfGroups();
+	public void setGroupList() throws Exception {
+		groupList = serverPullPusher.pullGroupList();
 	}
 
-	public void setProductList() {
-		productList = serverPullPusher.pullListOfProducts();
+	public void setProductList() throws Exception {
+		productList = serverPullPusher.pullProductsList();
 	}
 
 }
